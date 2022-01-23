@@ -1,0 +1,15 @@
+name: SimpleFly
+version: 0.0.1
+api: 4.0.0
+main: YTBJero\SimpleFly\Main 
+author: YTBJero
+
+commands:
+  fly:
+    permission: simplefly.command 
+    description: "Fly mode"
+
+permissions:
+  simplefly.command:
+    description: "Fly mode"
+    default: op

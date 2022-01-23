@@ -1,6 +1,6 @@
-[![](https://poggit.pmmp.io/shield.state/LockedItem)]
+[![](https://poggit.pmmp.io/shield.state/SimpleFly)]
 <div align="center">
-<h1>LockedItem| v1.0.0<h1>
+<h1>SimpleFly| v1.0.0<h1>
 <p>Help to fly in survival mode.</p>
 </div>
 

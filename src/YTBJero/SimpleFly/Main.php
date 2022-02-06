@@ -44,46 +44,49 @@ class Main extends PluginBase
 	{
 		if($command->getName() == "fly")
 		{
-			if(empty($args[0])){
-				if($sender->isCreative(true))
-				{
-					$sender->sendMessage($this->getConfig()->get('fly.creative'));
-					return false;
-				}
-				if($sender->isFlying())
-				{
-					$sender->setFlying(false);
-					$sender->sendMessage($this->getConfig()->get('fly.off'));
-					return false;
-				} else{
-					$sender->setFlying(true);
-					$sender->sendMessage($this->getConfig()->get('fly.on'));
-					return false;
-				}
-			}
-			if(isset($args[0])){
-				if($this->getServer()->getPlayerExact($args[0]) !== null)
-				{
-					$player = $this->getServer()->getPlayerExact($args[0]);
-					if($player->isCreative(true))
+			if($sender instanceof Player)
+			{
+				if(empty($args[0])){
+					if($sender->isCreative(true))
 					{
-						$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.creative')));
+						$sender->sendMessage($this->getConfig()->get('fly.creative'));
+						return false;
+					}
+					if($sender->isFlying())
+					{
+						$sender->setFlying(false);
+						$sender->sendMessage($this->getConfig()->get('fly.off'));
 						return false;
 					} else{
-						if($player->isFlying())
+						$sender->setFlying(true);
+						$sender->sendMessage($this->getConfig()->get('fly.on'));
+						return false;
+					}
+				}
+				if(isset($args[0])){
+					if($this->getServer()->getPlayerExact($args[0]) !== null)
+					{
+						$player = $this->getServer()->getPlayerExact($args[0]);
+						if($player->isCreative(true))
 						{
-							$player->setFlying(false);
-							$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.off')));
+							$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.creative')));
 							return false;
 						} else{
-							$player->setFlying(true);
-							$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.on')));
-							return false;
+							if($player->isFlying())
+							{
+								$player->setFlying(false);
+								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.off')));
+								return false;
+							} else{
+								$player->setFlying(true);
+								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.on')));
+								return false;
+							}
 						}
+					} else{
+						$sender->sendMessage($this->getConfig()->get('fly.other.not-found'));
+						return false;
 					}
-				} else{
-					$sender->sendMessage($this->getConfig()->get('fly.other.not-found'));
-					return false;
 				}
 			}
 		}

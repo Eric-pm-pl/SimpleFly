@@ -52,9 +52,3 @@ event.world-move.disable: true
 event.damage.disable: true
 ...
  ```
-## Project Infomation
-
-| Plugin Version | Pocketmine API | PHP Version | Plugin Status |
-|---|---|---|---|
-| 0.0.1 | 4.x.x | 8.0 | Completed |
- 

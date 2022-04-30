@@ -55,10 +55,12 @@ class Main extends PluginBase
 					if($sender->isFlying())
 					{
 						$sender->setFlying(false);
+						$sender->setAllowFlight(false);
 						$sender->sendMessage($this->getConfig()->get('fly.off'));
 						return false;
 					} else{
 						$sender->setFlying(true);
+						$sender->setAllowFlight(true);
 						$sender->sendMessage($this->getConfig()->get('fly.on'));
 						return false;
 					}
@@ -75,10 +77,12 @@ class Main extends PluginBase
 							if($player->isFlying())
 							{
 								$player->setFlying(false);
+								$player->setAllowFlight(false);
 								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.off')));
 								return false;
 							} else{
 								$player->setFlying(true);
+								$player->setAllowFlight(true);
 								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.on')));
 								return false;
 							}

@@ -51,6 +51,7 @@ class EventListener implements Listener
 			if($player->isFlying())
 			{
 				$player->setFlying(false);
+				$player->setAllowFlight(false);
 				$player->sendMessage($config->get('join.disable'));
 			}
 		}
@@ -71,6 +72,7 @@ class EventListener implements Listener
 				if($player->isFlying())
 				{
 					$player->setFlying(false);
+					$player->setAllowFlight(false);
 					$player->sendMessage($config->get('world-move.disable'));
 				}
 			}
@@ -93,6 +95,7 @@ class EventListener implements Listener
 					if($damager->isFlying())
 					{
 						$damager->setFlying(false);
+						$damager->setAllowFlight(false);
 						$damager->sendMessage($config->get('damage.disable'));
 					}
 				}

@@ -5,6 +5,7 @@
  # |____/|_|_| |_| |_| .__/|_|\___|_|   |_|\__, |
  #                   |_|                   |___/ 
 # Main config of SimpleFly
+# Use {PLAYER} tag for player name.
 # Messages
 fly.creative: "You can't do this while in creative mode!"
 fly.on: "Fly mode is on."

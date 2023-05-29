@@ -1,4 +1,5 @@
 [![](https://poggit.pmmp.io/shield.state/SimpleFly)]
+[![Discord](https://img.shields.io/discord/1100650029573738508.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/yAhsgskaGy)
 <div align="center">
 <h1>SimpleFly| v1.0.0<h1>
 <p>Help to fly in survival mode.</p>

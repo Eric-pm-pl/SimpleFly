@@ -2,7 +2,7 @@
 
 /*
  * SimpleFly plugin for PocketMine-MP
- * Copyright (C) 2022 JeroGamingYT-pm-pl <https://github.com/JeroGamingYT-pm-pl/SimpleFly>
+ * Copyright (C) 2022 Taylor-pm-pl <https://github.com/Taylor-pm-pl/SimpleFly>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@ use pocketmine\player\Player;
 class EventListener implements Listener 
 {
 	/**@Var Main $plugin*/
-	public $plugin;
+	public Main $plugin;
 	/**
 	 * @param Main $plugin
 	 */
@@ -41,11 +41,11 @@ class EventListener implements Listener
 	/**
 	 * @param  PlayerJoinEvent $event
 	 */
-	public function onPlayerJoin(PlayerJoinEvent $event)
-	{
+	public function onPlayerJoin(PlayerJoinEvent $event): void
+    {
 		$player = $event->getPlayer();
 		$config = $this->plugin->getConfig();
-		if($config->get('event.join.reset'))
+		if($config->get('event.join.reset', true))
 		{
 			if($player->isCreative(true)) return;
 			if($player->isFlying())
@@ -60,13 +60,13 @@ class EventListener implements Listener
 	/**
 	 * @param  EntityTeleportEvent $event
 	 */
-	public function onPlayerTeleport(EntityTeleportEvent $event)
-	{
+	public function onPlayerTeleport(EntityTeleportEvent $event): void
+    {
 		$player = $event->getEntity();
 		$config = $this->plugin->getConfig();
 		if($player instanceof Player)
 		{
-			if($config->get('event.world-move.disable'))
+			if($config->get('event.world-move.disable', true))
 			{
 				if($player->isCreative(true)) return;
 				if($player->isFlying())
@@ -82,21 +82,20 @@ class EventListener implements Listener
 	/**
 	 * @param  EntityDamageEvent $event
 	 */
-	public function onDamage(EntityDamageEvent $event)
-	{
-		$player = $event->getEntity();
+	public function onDamage(EntityDamageEvent $event): void
+    {
 		$config = $this->plugin->getConfig();
 		if($event instanceof EntityDamageByEntityEvent){
-			if($config->get('event.damage.disable')){
-				$damager = $event->getDamager();
-				if($damager instanceof Player)
+			if($config->get('event.damage.disable', true)){
+				$damage = $event->getDamager();
+				if($damage instanceof Player)
 				{
-					if($damager->isCreative(true)) return;
-					if($damager->isFlying())
+					if($damage->isCreative(true)) return;
+					if($damage->isFlying())
 					{
-						$damager->setFlying(false);
-						$damager->setAllowFlight(false);
-						$damager->sendMessage($config->get('damage.disable'));
+						$damage->setFlying(false);
+						$damage->setAllowFlight(false);
+						$damage->sendMessage($config->get('damage.disable'));
 					}
 				}
 			}

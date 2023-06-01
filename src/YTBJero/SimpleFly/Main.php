@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 /*
  * SimpleFly plugin for PocketMine-MP
- * Copyright (C) 2022 JeroGamingYT-pm-pl <https://github.com/JeroGamingYT-pm-pl/SimpleFly>
+ * Copyright (C) 2022 Taylor-pm-pl <https://github.com/Taylor-pm-pl/SimpleFly>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -13,7 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,74 +26,100 @@ use pocketmine\plugin\PluginBase;
 
 class Main extends PluginBase
 {
+    public function onEnable(): void
+    {
+        $this->getServer()
+            ->getPluginManager()
+            ->registerEvents(new EventListener($this), $this);
+        $this->saveDefaultConfig();
+    }
 
-	public function onEnable(): void 
-	{
-		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
-		$this->saveDefaultConfig();
-	}
+    /**
+     * @param CommandSender $sender
+     * @param Command $command
+     * @param String $label
+     * @param array $args
+     * @return bool
+     */
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool {
+        if ($command->getName() !== "fly" || !$sender instanceof Player) {
+            return true;
+        }
 
-	/**
-	 * @param  CommandSender $sender
-	 * @param  Command       $command
-	 * @param  String        $label
-	 * @param  Array         $args
-	 * @return bool
-	 */
-	public function onCommand(CommandSender $sender, Command $command, String $label, Array $args): bool 
-	{
-		if($command->getName() == "fly")
-		{
-			if($sender instanceof Player)
-			{
-				if(empty($args[0])){
-					if($sender->isCreative(true))
-					{
-						$sender->sendMessage($this->getConfig()->get('fly.creative'));
-						return false;
-					}
-					if($sender->isFlying())
-					{
-						$sender->setFlying(false);
-						$sender->setAllowFlight(false);
-						$sender->sendMessage($this->getConfig()->get('fly.off'));
-						return false;
-					} else{
-						$sender->setFlying(true);
-						$sender->setAllowFlight(true);
-						$sender->sendMessage($this->getConfig()->get('fly.on'));
-						return false;
-					}
-				}
-				if(isset($args[0])){
-					if($this->getServer()->getPlayerExact($args[0]) !== null)
-					{
-						$player = $this->getServer()->getPlayerExact($args[0]);
-						if($player->isCreative(true))
-						{
-							$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.creative')));
-							return false;
-						} else{
-							if($player->isFlying())
-							{
-								$player->setFlying(false);
-								$player->setAllowFlight(false);
-								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.off')));
-								return false;
-							} else{
-								$player->setFlying(true);
-								$player->setAllowFlight(true);
-								$sender->sendMessage(str_replace('{PLAYER}', $player->getName(), $this->getConfig()->get('fly.other.on')));
-								return false;
-							}
-						}
-					} else{
-						$sender->sendMessage($this->getConfig()->get('fly.other.not-found'));
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
+        if (empty($args[0])) {
+            $this->handleSelfFlyCommand($sender);
+        } else {
+            $this->handleOtherFlyCommand($sender, $args[0]);
+        }
+
+        return true;
+    }
+
+    private function handleSelfFlyCommand(Player $player): void {
+        if ($player->isCreative(true)) {
+            $player->sendMessage($this->getConfig()->get("fly.creative"));
+            return;
+        }
+
+        if ($player->isFlying()) {
+            if (!$this->setFly($player, false)) {
+                $player->sendMessage($this->getConfig()->get("fly.not-allowed"));
+                return;
+            }
+            $player->sendMessage($this->getConfig()->get("fly.off"));
+        } else {
+            if (!$this->setFly($player, true)) {
+                $player->sendMessage($this->getConfig()->get("fly.not-allowed"));
+                return;
+            }
+            $player->sendMessage($this->getConfig()->get("fly.on"));
+        }
+    }
+
+    private function handleOtherFlyCommand(Player $sender, string $playerName): void {
+        $targetPlayer = $this->getServer()->getPlayerExact($playerName);
+        if ($targetPlayer === null) {
+            $sender->sendMessage($this->getConfig()->get("fly.other.not-found"));
+            return;
+        }
+
+        if ($targetPlayer->isCreative(true)) {
+            $sender->sendMessage(str_replace("{PLAYER}", $targetPlayer->getName(), $this->getConfig()->get("fly.other.creative")));
+            return;
+        }
+
+        if ($targetPlayer->isFlying()) {
+            if (!$this->setFly($targetPlayer, false)) {
+                $targetPlayer->sendMessage($this->getConfig()->get("fly.not-allowed"));
+                return;
+            }
+            $sender->sendMessage(str_replace("{PLAYER}", $targetPlayer->getName(), $this->getConfig()->get("fly.other.off")));
+        } else {
+            if (!$this->setFly($targetPlayer, true)) {
+                $targetPlayer->sendMessage($this->getConfig()->get("fly.not-allowed"));
+                return;
+            }
+            $sender->sendMessage(str_replace("{PLAYER}", $targetPlayer->getName(), $this->getConfig()->get("fly.other.on")));
+        }
+    }
+
+    public function setFly(Player $player, bool $value): bool {
+        $worldName = $player->getWorld()->getDisplayName();
+        $worlds = $this->getConfig()->get("worlds");
+        $mode = strval($this->getConfig()->get("mode"));
+
+        $isBlacklist = match ($mode) {
+            "blacklist" => true,
+            "whitelist" => false,
+            default => true
+        };
+
+        if (($isBlacklist && !in_array($worldName, $worlds)) || (!$isBlacklist && in_array($worldName, $worlds))) {
+            $player->setFlying($value);
+            $player->setAllowFlight($value);
+            return true;
+        }
+
+        return false;
+    }
 }
